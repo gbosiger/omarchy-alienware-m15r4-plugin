@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "gebo.alienware",
+  "name": "Alienware Control",
+  "version": "1.0.0",
+  "author": "gebo",
+  "description": "Thermal profiles, fan boost, and Alienware status",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Alienware Control",
+    "description": "Open the Alienware thermal control panel",
+    "category": "Hardware",
+    "allowMultiple": false
+  }
+}

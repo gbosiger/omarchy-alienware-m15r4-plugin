@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+find_hwmon() {
+  local wanted=$1 d name
+  for d in /sys/class/hwmon/hwmon*; do
+    [[ -r "$d/name" ]] || continue
+    name=$(<"$d/name")
+    [[ "$name" == "$wanted" ]] && { printf '%s\n' "$d"; return; }
+  done
+}
+
+read_value() {
+  local path=$1 value
+  if [[ -r "$path" ]]; then
+    IFS= read -r value < "$path" || true
+    printf '%s\n' "${value:-0}"
+  else
+    printf '0\n'
+  fi
+}
+
+percent() {
+  awk -v raw="${1:-0}" 'BEGIN { printf "%d", (raw < 0 ? 0 : raw > 255 ? 100 : raw * 100 / 255) }'
+}
+
+status() {
+  local aw core profile cpu_temp gpu_temp cpu_rpm gpu_rpm cpu_boost gpu_boost
+  aw=$(find_hwmon alienware_wmi || true)
+  core=$(find_hwmon coretemp || true)
+  profile=$(cat /sys/firmware/acpi/platform_profile 2>/dev/null || printf 'unknown')
+  cpu_temp=0
+  [[ -n "$core" ]] && cpu_temp=$(($(read_value "$core/temp1_input") / 1000))
+  gpu_temp=0
+  [[ -n "$aw" ]] && gpu_temp=$(($(read_value "$aw/temp2_input") / 1000))
+  cpu_rpm=0; gpu_rpm=0; cpu_boost=0; gpu_boost=0
+  if [[ -n "$aw" ]]; then
+    cpu_rpm=$(read_value "$aw/fan1_input")
+    gpu_rpm=$(read_value "$aw/fan2_input")
+    cpu_boost=$(percent "$(read_value "$aw/fan1_boost")")
+    gpu_boost=$(percent "$(read_value "$aw/fan2_boost")")
+  fi
+  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$profile" "$cpu_temp" "$gpu_temp" "$cpu_rpm" "$gpu_rpm" "$cpu_boost" "$gpu_boost"
+}
+
+case "${1:-status}" in
+  status) status ;;
+  profile)
+    [[ "${2:-}" =~ ^(cool|quiet|balanced|balanced-performance|performance|custom)$ ]] || exit 2
+    exec awcc-cli profile "$2"
+    ;;
+  boost)
+    [[ "${2:-}" =~ ^(cpu|gpu)$ && "${3:-}" =~ ^([0-9]|[1-9][0-9]|100)$ ]] || exit 2
+    exec awcc-cli boost "$2" "$3"
+    ;;
+  clear)
+    awcc-cli boost cpu 0 >/dev/null
+    exec awcc-cli boost gpu 0
+    ;;
+  light)
+    case "${2:-}" in
+      blue)
+        alienfx-cli --save setall 0 120 255
+        exec alienfx-cli --save setglobal 1 1 1 0 120 255
+        ;;
+      purple)
+        alienfx-cli --save setall 170 80 255
+        exec alienfx-cli --save setglobal 1 1 1 170 80 255
+        ;;
+      white)
+        alienfx-cli --save setall 255 255 255
+        exec alienfx-cli --save setglobal 1 1 1 255 255 255
+        ;;
+      off)
+        alienfx-cli --save setdim 0
+        exec alienfx-cli --save setglobal 1 0 0
+        ;;
+      *) exit 2 ;;
+    esac
+    ;;
+  normal)
+    exec awcc-cli mode profile
+    ;;
+  *) exit 2 ;;
+esac
