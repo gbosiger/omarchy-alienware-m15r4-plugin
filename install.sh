@@ -5,6 +5,12 @@ root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 install -Dm755 "$root/bin/omarchy-alienware" "$HOME/.local/bin/omarchy-alienware"
 install -d "$HOME/.config/omarchy/plugins/gebo.alienware"
 cp -a "$root/omarchy/plugins/gebo.alienware/." "$HOME/.config/omarchy/plugins/gebo.alienware/"
+install -Dm644 "$root/applications/gebo.alienware.desktop" \
+  "$HOME/.local/share/applications/gebo.alienware.desktop"
+install -Dm644 "$root/applications/io.github.awcclinux.Awcc.desktop" \
+  "$HOME/.local/share/applications/io.github.awcclinux.Awcc.desktop"
+rm -f "$HOME/.local/share/applications/io.github.awcclinux.Controls.desktop"
 
 printf '%s\n' "Custom files installed. Merge config/shell.json into your Omarchy shell configuration." \
-  "Install the udev rule with sudo, then run: omarchy-shell shell rescanPlugins"
+  "Install the udev rule with sudo, then run: omarchy-shell shell rescanPlugins" \
+  "AWCC-Linux opens the original GTK client; Alienware Controls opens the Omarchy panel."

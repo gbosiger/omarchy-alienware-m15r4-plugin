@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=AWCC-Linux
+GenericName=Advanced Thermal & Fan Control
+Comment=Original AWCC-Linux GTK client with advanced controls and tray support
+Exec=awcc
+Icon=io.github.awcclinux.Awcc
+Terminal=false
+Categories=Settings;
+Keywords=fan;thermal;temperature;cooling;alienware;awcc;profile;curve;power;
+StartupNotify=true

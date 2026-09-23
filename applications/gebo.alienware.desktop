@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Alienware Controls
+GenericName=Alienware Control Panel
+Comment=Omarchy-themed Alienware thermal, fan, and lighting controls
+Exec=omarchy-shell gebo.alienware open
+Icon=io.github.awcclinux.Awcc
+Terminal=false
+Categories=Settings;
+Keywords=fan;thermal;temperature;cooling;alienware;awcc;profile;
+StartupNotify=false

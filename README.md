@@ -26,7 +26,24 @@ instructions. After that, from this directory run:
 install -Dm755 bin/omarchy-alienware ~/.local/bin/omarchy-alienware
 mkdir -p ~/.config/omarchy/plugins/gebo.alienware
 cp -a omarchy/plugins/gebo.alienware/. ~/.config/omarchy/plugins/gebo.alienware/
+install -Dm644 applications/gebo.alienware.desktop \
+  ~/.local/share/applications/gebo.alienware.desktop
+install -Dm644 applications/io.github.awcclinux.Awcc.desktop \
+  ~/.local/share/applications/io.github.awcclinux.Awcc.desktop
 ```
+
+The `Alienware Controls` launcher entry opens the same Omarchy-themed QML panel
+used by the toolbar widget. The original AWCC-Linux GTK client remains
+available with the `AWCC-Linux` launcher entry or with `awcc`.
+
+## Dependencies
+
+- AWCC-Linux's `awccd` daemon and `awcc-cli` are required for thermal profiles,
+  fan boost, firmware mode changes, and the live power controls.
+- Basic temperature and fan readings can still come from the kernel hwmon
+  interfaces when AWCC-Linux is unavailable, but profile and boost actions will
+  fail.
+- `alienfx-cli` is required separately for the lighting buttons.
 
 Install the lighting permissions with an administrative terminal:
 
